@@ -727,7 +727,8 @@ func handlelistrecettes(con net.Conn, db sql.DB) {
 				//con.Write(([]byte(string(Nam))))
 
 				//fmt.Printf("name: %s and  id: %d \n", Nam, id)
-				fmt.Printf("IDR: %s , RName: %s , origin: %s , Accronyme: %s,Liens: %s  \n", CIDR, Cnom, quantity, unity)
+				//fmt.Printf("IDR: %s , RName: %s , origin: %s , Accronyme: %s,Liens: %s  \n ", CIDR, Cnom, quantity, unity)
+
 				//nam += IDR + "  -  " + RName + " , "
 				//fmt.Printf("Liens: %s , RName: %s  \n", Liens, RName)
 				//nam += Liens + "*" + RName + ","
@@ -808,6 +809,74 @@ func handlelistrecettes(con net.Conn, db sql.DB) {
 
 			defer insert.Close()
 			fmt.Println("Succesfully deleted to mysql")
+
+		} else if sa[0] == "liste_ingredients_panier" {
+			fmt.Println("=>" + sms)
+
+			results, err := db.Query(("SELECT * FROM Panier "))
+			if err != nil {
+				panic(err.Error())
+			}
+
+			var nam = ""
+			for results.Next() {
+				var (
+					//Nam string
+					//id  int
+					nom_ingred string
+				)
+
+				err = results.Scan(&nom_ingred)
+
+				//err = results.Scan(&Liens, &RName)
+				//	err = results.Scan(&Nam, &id)
+				if err != nil {
+					panic(err.Error())
+
+				}
+				//con.Write(([]byte(string(Nam))))
+
+				//fmt.Printf("name: %s and  id: %d \n", Nam, id)
+				fmt.Printf("nom_ingredients: %s \n", nom_ingred)
+				//nam += IDR + "  -  " + RName + " , "
+				//fmt.Printf("Liens: %s , RName: %s  \n", Liens, RName)
+				//nam += Liens + "*" + RName + ","
+
+				nam += nom_ingred + ","
+				//fmt.Printf("\n" + nam)
+			}
+
+			con.Write(([]byte(string(nam))))
+
+		} else if sa[0] == "Delete_nom_ingredients_panier" {
+
+			fmt.Println("=>" + sms)
+			fmt.Println("=>" + sa[0])
+			fmt.Println("=>" + sa[1])
+
+			insert, err := db.Query(" Delete FROM Panier WHERE nom_ingred='" + sa[1] + "'")
+			if err != nil {
+				panic(err.Error())
+			}
+
+			defer insert.Close()
+			fmt.Println("Succesfully deleted to mysql")
+
+		} else if sa[0] == "Ajout_nom_ingredients_panier" {
+			//fmt.Println("=>" + sms)
+			fmt.Println("=>" + sa[0])
+			fmt.Println("=>" + sa[1])
+
+			//sof1 := strings.Split(sa[1], " ")
+			//sof2 := strings.Split(sa[2], " ")
+			//fmt.Println("=>" + sa[1])
+			//fmt.Println("=>" + sa[2])
+			insert, err := db.Query("INSERT INTO Panier VALUES('" + sa[1] + "')")
+			if err != nil {
+				panic(err.Error())
+			}
+			defer insert.Close()
+			fmt.Println("Succesfully Inserted to mysql")
 
 		}
 
