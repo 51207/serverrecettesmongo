@@ -37,13 +37,15 @@ func handle(con net.Conn) {
 func main() {
 	fmt.Println("tuto socket")
 	//listen
-	dstream, err := net.Listen("tcp", "127.0.0.1:8002")
+	// 172.20.0.3 est l'adresse ip du container
+	dstream, err := net.Listen("tcp", "172.20.0.3:8002")
 	if err != nil {
 		fmt.Println((err))
 		return
 	}
 	defer dstream.Close()
-	db, err := sql.Open("mysql", "root:isib@tcp(127.0.0.1:3306)/lunch")
+	db, err := sql.Open("mysql", "root:isib@tcp(db)/lunch_recettes")
+	//db, err := sql.Open("mysql", "root:isib@tcp(db)/lunch")
 	//db, err := sql.Open("mysql", "root:isib@tcp(127.0.0.1:3306)/gotuto")
 	if err != nil {
 		panic(err.Error())
@@ -119,6 +121,14 @@ func main() {
 		con.Close()
 	}
 
+	//fmt.Println("go to sql tutorial")
+	/*db, err := sql.Open("mysql", "root:isib@tcp(127.0.0.1:3306)/gotuto")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()*/
+	//fmt.Println("Succesfully connected ot mysql")
+
 }
 
 func handlelistrecettes(con net.Conn, db sql.DB) {
@@ -141,6 +151,52 @@ func handlelistrecettes(con net.Conn, db sql.DB) {
 		sms := string(buf[0:])
 		sa := strings.Split(sms, ",")
 		fmt.Println(sa[0])
+
+		/*	//demorecette
+			if sa[0] == "ajout" {
+				//fmt.Println("=>" + sms)
+				fmt.Println("=>" + sa[0])
+				fmt.Println("=>" + sa[1])
+				fmt.Println("=>" + sa[2])
+
+				insert, err := db.Query("INSERT INTO users VALUES('" + sa[1] + "','" + sa[2] + "')")
+				if err != nil {
+					panic(err.Error())
+				}
+				defer insert.Close()
+				fmt.Println("Succesfully Inserted to mysql")
+
+			} else if sa[0] == "retrieve" {
+				fmt.Println("=>" + sms)
+				fmt.Println("=>" + sa[0])
+
+				results, err := db.Query(("SELECT * FROM users "))
+				if err != nil {
+					panic(err.Error())
+				}
+
+				var nam = ""
+				for results.Next() {
+					var (
+						//Nam string
+						//id  int
+						Nam string
+						img string
+					)
+					err = results.Scan(&Nam, &img)
+					if err != nil {
+						panic(err.Error())
+
+					}
+					//con.Write(([]byte(string(Nam))))
+
+					fmt.Printf("name: %s , lien : %s  \n", Nam, img)
+					nam += Nam + "*" + img + ","
+
+				}
+				con.Write(([]byte(string(nam))))
+			}*/
+		//findemorectte
 
 		//debut----
 
@@ -486,7 +542,7 @@ func handlelistrecettes(con net.Conn, db sql.DB) {
 
 				sof := strings.Split(sa[1], " ")
 				fmt.Println("=>=>" + sof[1] + ",")
-				results, err := db.Query(("SELECT Days,RName, lien FROM daysrecettes inner join recettes on CIDR=IDR where Ddays='" + sa[1] + "'"))
+				results, err := db.Query(("SELECT Days,RName, lien FROM DaysRecettes inner join recettes on CIDR=IDR where Ddays='" + sa[1] + "'"))
 				if err != nil {
 					panic(err.Error())
 				}
@@ -520,7 +576,7 @@ func handlelistrecettes(con net.Conn, db sql.DB) {
 			} else {
 				//sof := strings.Split(sa[1], " ")
 				fmt.Println("=>=>" + sa[1] + ",")
-				results, err := db.Query(("SELECT Ddays,CIDR,RName,lien FROM daysrecettes inner join recettes on CIDR=IDR where Ddays='" + sa[1] + "'"))
+				results, err := db.Query(("SELECT Ddays,CIDR,RName,lien FROM DaysRecettes inner join recettes on CIDR=IDR where Ddays='" + sa[1] + "'"))
 				if err != nil {
 					panic(err.Error())
 				}

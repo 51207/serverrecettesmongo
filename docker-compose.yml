@@ -1,0 +1,25 @@
+version: '3'
+services:
+  go_srv:
+    container_name: serveur_go
+    build: .
+
+    depends_on:
+      - db
+
+    ports:
+      - '8002:8002'
+      
+    restart: always
+  db:
+    image: mysql:8.0.27
+    restart: always # port exposé : myql port runnig inside container
+    container_name: db
+    ports:
+      - '3306:3306'
+    volumes:
+      - "./db:/var/lib/mysql"
+
+    environment:
+      MYSQL_DATABASE: 'lunch'
+      MYSQL_ROOT_PASSWORD: "isib"
